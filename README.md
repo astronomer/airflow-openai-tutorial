@@ -1,49 +1,40 @@
-Overview
-========
+Orchestrate OpenAI operations with Apache Airflow
+==================================================
 
-Welcome to Astronomer! This project was generated after you ran 'astro dev init' using the Astronomer CLI. This readme describes the contents of the project, as well as how to run Apache Airflow on your local machine.
+This repository contains the DAG code used in the [Orchestrate OpenAI operations with Apache Airflow tutorial](https://docs.astronomer.io/learn/airflow-openai). 
 
-Project Contents
-================
+The DAG in this repository uses the following package:
 
-Your Astro project contains the following files and folders:
+- [OpenAI Airflow provider](https://airflow.apache.org/docs/apache-airflow-providers-openai/stable/index.html).
+- [OpenAI Python client](https://pypi.org/project/openai/)
+- [scikit-learn](https://scikit-learn.org/stable/).
+- [pandas](https://pandas.pydata.org/).
+- [numpy](https://numpy.org/).
+- [matplotlib](https://matplotlib.org/).
+- [seaborn](https://seaborn.pydata.org/).
 
-- dags: This folder contains the Python files for your Airflow DAGs. By default, this directory includes two example DAGs:
-    - `example_dag_basic`: This DAG shows a simple ETL data pipeline example with three TaskFlow API tasks that run daily.
-    - `example_dag_advanced`: This advanced DAG showcases a variety of Airflow features like branching, Jinja templates, task groups and several Airflow operators.
-- Dockerfile: This file contains a versioned Astro Runtime Docker image that provides a differentiated Airflow experience. If you want to execute other commands or overrides at runtime, specify them here.
-- include: This folder contains any additional files that you want to include as part of your project. It is empty by default.
-- packages.txt: Install OS-level packages needed for your project by adding them to this file. It is empty by default.
-- requirements.txt: Install Python packages needed for your project by adding them to this file. It is empty by default.
-- plugins: Add custom or community plugins for your project to this file. It is empty by default.
-- airflow_settings.yaml: Use this local-only file to specify Airflow Connections, Variables, and Pools instead of entering them in the Airflow UI as you develop DAGs in this project.
+# How to use this repository
 
-Deploy Your Project Locally
-===========================
+This section explains how to run this repository with Airflow. Note that you will need to copy the contents of the `.env_example` file to a newly created `.env` file. You will need to have a valid OpenAI API key of at [least tier 1](https://platform.openai.com/docs/guides/rate-limits/usage-tiers) to run this repository.
 
-1. Start Airflow on your local machine by running 'astro dev start'.
+Download the [Astro CLI](https://docs.astronomer.io/astro/cli/install-cli) to run Airflow locally in Docker. `astro` is the only package you will need to install locally.
 
-This command will spin up 4 Docker containers on your machine, each for a different Airflow component:
+1. Run `git clone https://github.com/astronomer/use-case-mlflow.git` on your computer to create a local clone of this repository.
+2. Install the Astro CLI by following the steps in the [Astro CLI documentation](https://docs.astronomer.io/astro/cli/install-cli). Docker Desktop/Docker Engine is a prerequisite, but you don't need in-depth Docker knowledge to run Airflow with the Astro CLI.
+3. Create a `.env` file in the root of your cloned repository and copy the contents of the `.env_example` file to it. Provide your own OpenAi API key in the `.env` file.
+4. Run `astro dev start` in your cloned repository.
+5. After your Astro project has started. View the Airflow UI at `localhost:8080`.
+6. Run the `captains_dag` DAG manually by clicking the play button. Provide your own question and adjust the parameters in the DAG to your liking.
 
-- Postgres: Airflow's Metadata Database
-- Webserver: The Airflow component responsible for rendering the Airflow UI
-- Scheduler: The Airflow component responsible for monitoring and triggering tasks
-- Triggerer: The Airflow component responsible for triggering deferred tasks
+In this project `astro dev start` spins up 4 Docker containers:
 
-2. Verify that all 4 Docker containers were created by running 'docker ps'.
+- The Airflow webserver, which runs the Airflow UI and can be accessed at `https://localhost:8080/`.
+- The Airflow scheduler, which is responsible for monitoring and triggering tasks.
+- The Airflow triggerer, which is an Airflow component used to run deferrable operators.
+- The Airflow metadata database, which is a Postgres database that runs on port 5432.
 
-Note: Running 'astro dev start' will start your project with the Airflow Webserver exposed at port 8080 and Postgres exposed at port 5432. If you already have either of those ports allocated, you can either [stop your existing Docker containers or change the port](https://docs.astronomer.io/astro/test-and-troubleshoot-locally#ports-are-not-available).
+## Resources
 
-3. Access the Airflow UI for your local Airflow project. To do so, go to http://localhost:8080/ and log in with 'admin' for both your Username and Password.
-
-You should also be able to access your Postgres Database at 'localhost:5432/postgres'.
-
-Deploy Your Project to Astronomer
-=================================
-
-If you have an Astronomer account, pushing code to a Deployment on Astronomer is simple. For deploying instructions, refer to Astronomer documentation: https://docs.astronomer.io/cloud/deploy-code/
-
-Contact
-=======
-
-The Astronomer CLI is maintained with love by the Astronomer team. To report a bug or suggest a change, reach out to our support.
+- [Orchestrate OpenAI operations with Apache Airflow](https://docs.astronomer.io/learn/airflow-openai).
+- [OpenAI Airflow provider documentation](https://airflow.apache.org/docs/apache-airflow-providers-openai/stable/index.html).
+- [OpenAI documentation](https://platform.openai.com/docs/introduction).

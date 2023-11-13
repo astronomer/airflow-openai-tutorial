@@ -75,9 +75,7 @@ def captains_dag():
         max_tokens_answer = context["params"]["max_tokens_answer"]
         randomness_of_answer = context["params"]["randomness_of_answer"]
         hook = OpenAIHook(conn_id=open_ai_conn_id)
-        conn = hook.get_connection(conn_id=open_ai_conn_id)
-
-        openai.api_key = conn.password
+        openai.api_key = hook._get_api_key()
 
         response = openai.ChatCompletion.create(
             model="gpt-3.5-turbo",
