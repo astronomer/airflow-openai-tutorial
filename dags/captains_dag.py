@@ -37,7 +37,7 @@ star_trek_captains_list = [
         "question": Param(
             "Which is your favorite ship?",
             type="string",
-            title="Question to ask the captain",
+            title="Question to ask the captains",
             description="Enter what you would like to ask the captain.",
             min_length=1,
             max_length=500,
@@ -55,22 +55,28 @@ star_trek_captains_list = [
             description="Maximum number of tokens to generate for the answer.",
         ),
         "randomness_of_answer": Param(
-            1,
+            10,
             type="integer",
-            description="Controls randomness of answer. The higher the more random.",
+            description=(
+                "Enter the desired randomness of the answer on a scale"
+                + "from 0 (no randomness) to 20 (full randomness). "
+                + "This setting corresponds to 10x the temperature setting in the OpenAI API."
+            ),
             min=0,
-            max=2,
+            max=20,
         ),
     },
 )
 def captains_dag():
     @task
     def get_captains_list(**context):
+        "Pull the list of captains to ask from the context."
         captains_list = context["params"]["captains_to_ask"]
         return captains_list
 
     @task
     def ask_a_captain(open_ai_conn_id: str, captain_to_ask, **context):
+        "Ask a captain a question using gpt-3.5-turbo."
         question = context["params"]["question"]
         max_tokens_answer = context["params"]["max_tokens_answer"]
         randomness_of_answer = context["params"]["randomness_of_answer"]
@@ -83,7 +89,7 @@ def captains_dag():
                 {"role": "system", "content": f"You are captain {captain_to_ask}."},
                 {"role": "user", "content": question},
             ],
-            temperature=randomness_of_answer,
+            temperature=randomness_of_answer / 10,
             max_tokens=max_tokens_answer,
         )
 
@@ -99,7 +105,7 @@ def captains_dag():
         captain_to_ask=captains_list
     )
 
-    t1 = OpenAIEmbeddingOperator.partial(
+    get_embeddings = OpenAIEmbeddingOperator.partial(
         task_id="get_embeddings",
         conn_id=OPENAI_CONN_ID,
         model="text-embedding-ada-002",
@@ -107,6 +113,7 @@ def captains_dag():
 
     @task
     def plot_embeddings(embeddings, text_labels, file_name="embeddings_plot.png"):
+        "Plot the embeddings of the captain responses."
         pca = PCA(n_components=2)
         reduced_embeddings = pca.fit_transform(embeddings)
 
@@ -187,9 +194,9 @@ def captains_dag():
         plt.close()
 
     chain(
-        t1,
+        get_embeddings,
         plot_embeddings(
-            t1.output,
+            get_embeddings.output,
             text_labels=captains_list,
             file_name=IMAGE_PATH,
         ),
