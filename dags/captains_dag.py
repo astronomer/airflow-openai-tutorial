@@ -2,7 +2,7 @@
 ## Ask questions to Star Trek captains using OpenAI's LLMs, embed and visualize the results
 
 This DAG shows how to use the OpenAI Airflow provider to interact with the OpenAI API.
-The DAG asks a question to a list of Star Trek captains given using Airflow params,
+The DAG asks a question to a list of Star Trek captains based on values you provide via Airflow params,
 embeds the responses using the OpenAI text-embedding-ada-002 model, and visualizes the
 embeddings in 2 dimensions using PCA, matplotlib and seaborn.
 """
@@ -54,8 +54,8 @@ star_trek_captains_list = [
         "captains_to_ask": Param(
             star_trek_captains_list,
             type="array",
-            description="Select the captains whose answers you would like to compare. "
-            + "Choose from "
+            description="List the captains whose answers you would like to compare. "
+            + "Suggestions: "
             + ", ".join(star_trek_captains_list),
         ),
         "max_tokens_answer": Param(
